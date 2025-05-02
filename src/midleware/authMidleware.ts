@@ -4,22 +4,20 @@ import { Request, Response, NextFunction } from "express";
 import { RoleEnum, RoleType } from "../common";
 
 
-// Middleware to protect routes and check roles
 const protectRoute = (roles: RoleType[] = [RoleEnum[2]]) => {
   return (req: Request, res: Response, next: NextFunction) => {
-    const authHeader = req.headers.authorization;
 
-    // Check if Authorization header exists and starts with "Bearer"
+    const authHeader = req.headers.authorization;
+    
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({
         message: "Access denied, no token provided or invalid format",
       });
-    }
+    } 
 
-    const token = authHeader.split(" ")[1]; // Extract the token after "Bearer"
+    const token = authHeader.split(" ")[1];
 
     try {
-      // Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET || "") as TokenPayload;
       req.user = decoded;
 
@@ -29,7 +27,7 @@ const protectRoute = (roles: RoleType[] = [RoleEnum[2]]) => {
           .json({ message: "Forbidden: You do not have the right role" });
       }
 
-      next(); // Move to the next middleware or the route handler
+      next();
     } catch (err) {
       console.log("error: ", err)
       res.status(401).json({ message: "Invalid token" });
