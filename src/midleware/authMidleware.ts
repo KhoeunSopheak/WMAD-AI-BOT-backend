@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from "express";
 import { RoleEnum, RoleType } from "../common";
 
 
-const protectRoute = (roles: RoleType[] = [RoleEnum[2]]) => {
+const protectRoute = (roles: RoleType[] = [RoleEnum[0]]) => {
   return (req: Request, res: Response, next: NextFunction) => {
 
     const authHeader = req.headers.authorization;

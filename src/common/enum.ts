@@ -2,15 +2,7 @@ import { tuple } from "./types/tuple";
 
 
 export const RoleEnum = tuple(
-  "guest",
-  "admin",
   "user",
-  "super-admin",
-  "member"
+  "admin",
 );
 export type RoleType = (typeof RoleEnum)[number];
-
-export enum TranOldEnum {
-  PENDING = 'pending',
-  COMPLETED = "completed"
-}
