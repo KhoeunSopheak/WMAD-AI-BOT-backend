@@ -1,7 +1,7 @@
-import { tuple } from "./tuple";
+import { tuple } from "./types/tuple";
 
 
-export const RoleEnum = tuple (
+export const RoleEnum = tuple(
   "guest",
   "admin",
   "user",

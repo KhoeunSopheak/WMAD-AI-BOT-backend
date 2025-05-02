@@ -1,4 +1,5 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
+import authRouter from "./src/routes/authRoute";
 
 const app = express();
 const PORT = 3003;
@@ -7,9 +8,7 @@ const PORT = 3003;
 app.use(express.json());
 
 // Routes
-app.get('/', (req: Request, res: Response) => {
-  res.send('wellcome to wmad ai bot');
-});
+app.use("/api/auth", authRouter);
 
 // Start server
 app.listen(PORT, () => {

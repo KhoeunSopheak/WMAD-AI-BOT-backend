@@ -7,7 +7,7 @@
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
     "emitDecoratorMetadata": true,
-    "typeRoots": ["@types"],
+    "typeRoots": ["./node_modules/@types", "./src/types"]
   },
-  "include": ["src", "index.ts"]
+  "include": ["src/**/*", "@types/express/index.d.ts"]
 }
