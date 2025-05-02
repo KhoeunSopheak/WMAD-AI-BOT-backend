@@ -16,7 +16,7 @@ export const register = async (req: Request, res: Response) => {
       id,
       full_name,
       email,
-      role,
+      role: role as RoleType,
       password,
       created_at,
       updated_at,
