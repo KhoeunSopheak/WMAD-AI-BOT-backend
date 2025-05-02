@@ -28,7 +28,7 @@ export interface User {
       
         const query = `
           INSERT INTO users (id, full_name, email, role, password, created_at, updated_at)
-          VALUES (?, ?, ?, ?, ?, ?, ?)
+          VALUES ($1, $2, $3, $4, $5, $6, $7)
         `;
       
         const values = [
@@ -46,9 +46,9 @@ export interface User {
       
 
     async findByEmail(email: string): Promise<User | null> {
-        const query = `SELECT * FROM users WHERE email = ?`;
-        const [rows]: any = await pool.query(query, [email]);
-
+        const query = `SELECT * FROM users WHERE email = $1`;
+        const result = await pool.query(query, [email]);
+        const rows = result.rows;
         return rows.length > 0 ? rows[0]: null;
     }
 
