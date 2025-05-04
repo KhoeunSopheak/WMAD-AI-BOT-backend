@@ -1,5 +1,5 @@
 import express from 'express';
-import authRouter from "./src/routes/authRoute";
+import authRouter from "./src/routes/auth.route";
 
 const app = express();
 const PORT = 3003;
