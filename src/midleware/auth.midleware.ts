@@ -1,4 +1,4 @@
-import { TokenPayload } from './../common/types/user';
+import { TokenPayload } from '../common/types/user';
 import * as jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 import { RoleEnum, RoleType } from "../common";

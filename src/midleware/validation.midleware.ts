@@ -3,13 +3,23 @@ import { z } from "zod";
 
 const userSchema = z.object({
   full_name: z.string().min(3),
-  email: z.string().email(),
+  email: z.string()
+  .email()
+  .regex(/^[\w.-]+@(institute\.)?pse\.ngo$/, {
+    message: "Invalid email",
+  }),
+
   password: z.string().min(8),
-  role: z.enum(["user","admin"]),
+  role: z.enum(["user", "admin"]),
 });
 
+
 const loginSchema = z.object({
-  email: z.string().email(),
+  email: z.string()
+  .email()
+  .regex(/^[\w.-]+@(institute\.)?pse\.ngo$/, {
+    message: "Invalid email",
+  }),
   password: z.string().min(8),
 });
 
