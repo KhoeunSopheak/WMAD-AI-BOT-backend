@@ -23,14 +23,20 @@ const loginSchema = z.object({
 });
 
 const studentSchema = z.object({
-  studentcard_id: z.number(),
+  studentcard_id: z.string()
+  .regex(/^\d+-\d+$/, {
+    message: "Id must be numbers, a dash (-), and numbers",
+  }),
   full_name: z.string().min(3),
   school: z.string(),
-  skill: z.string(),
+  skill: z.string()
 });
 
 const teacherSchema = z.object({
-  teachercard_id: z.number(),
+  teachercard_id: z.string()
+    .regex(/^00\d+$/, {
+      message: "Invalid Id",
+    }),
   full_name: z.string().min(3),
   school: z.string(),
   course: z.string(),
@@ -77,7 +83,7 @@ export const validateStudent = (
   next: NextFunction
 ): void => {
   try {
-    teacherSchema.parse(req.body);
+    studentSchema.parse(req.body);
     next();
   } catch (error) {
     if (error instanceof z.ZodError) {
