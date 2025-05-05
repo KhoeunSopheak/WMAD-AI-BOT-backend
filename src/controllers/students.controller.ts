@@ -3,10 +3,17 @@ import { StudentModel } from "../models/students.model";
 import { v4 as uuidv4 } from "uuid";
 
 export const create = async (req: Request, res: Response) => {
-  const { studentcard_id, user_id, full_name, school, skill } = req.body;
+  const { studentcard_id, full_name, school, skill } = req.body;
   const id = uuidv4();
   const created_at = new Date();
   const updated_at = new Date();
+
+  const user_id = req.user?.id;
+
+  if (!user_id) {
+    res.status(400).json({ message: "User ID is missing from token" });
+    return;
+  }
 
   try {
     const studentModel = new StudentModel({
@@ -27,6 +34,7 @@ export const create = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 export const getAllStudents = async (_req: Request, res: Response) => {
     try {
