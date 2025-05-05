@@ -12,9 +12,9 @@ import { RoleEnum } from "../common";
 const router = Router();
 
 router.post("/", protectRoute([RoleEnum[0]]), create); // 'user'
-router.get("/", getAllStudents);
-router.get("/:id", getStudentById);
-router.put("/:id", updateStudent);
-router.delete("/:id", deleteStudent);
+router.get("/",protectRoute([RoleEnum[0]]), getAllStudents);
+router.get("/:id",protectRoute([RoleEnum[0]]), getStudentById);
+router.put("/:id",protectRoute([RoleEnum[0]]), updateStudent);
+router.delete("/:id",protectRoute([RoleEnum[0]]), deleteStudent);
 
 export default router;
