@@ -8,7 +8,6 @@ const userSchema = z.object({
   .regex(/^[\w.-]+@(institute\.)?pse\.ngo$/, {
     message: "Invalid email",
   }),
-
   password: z.string().min(8),
   role: z.enum(["user", "admin"]),
 });
