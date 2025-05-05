@@ -36,3 +36,28 @@ CREATE TABLE teachers (
 
   CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES "users"(id)
 );
+
+#chats
+CREATE TABLE chats (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  student_message TEXT,
+	student_id UUID NOT NULL,
+	ai_message TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_chat_student FOREIGN KEY (student_id) REFERENCES students(id)
+);
+
+#blogs
+CREATE TABLE blocks (
+  id SERIAL PRIMARY KEY,
+  student_id INT NOT NULL,
+  title TEXT,
+  content TEXT,
+  chat_id INT,
+  status VARCHAR(20),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_block FOREIGN KEY (student_id) REFERENCES students(id),
+  CONSTRAINT fk_block_chat FOREIGN KEY (chat_id) REFERENCES chats(id)
+);
