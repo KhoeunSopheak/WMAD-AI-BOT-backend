@@ -1,5 +1,6 @@
 import express from 'express';
 import authRouter from "./src/routes/auth.route";
+import students from './src/routes/students.route';
 
 const app = express();
 const PORT = 3003;
@@ -9,6 +10,7 @@ app.use(express.json());
 
 // Routes
 app.use("/api/auth", authRouter);
+app.use("/api/students", students);
 
 // Start server
 app.listen(PORT, () => {
