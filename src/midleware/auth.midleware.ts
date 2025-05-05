@@ -1,19 +1,18 @@
-import { TokenPayload } from '../common/types/user';
+import { TokenPayload } from "../common/types/user";
 import * as jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 import { RoleEnum, RoleType } from "../common";
 
-
 const protectRoute = (roles: RoleType[] = [RoleEnum[0]]) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-
+  return (req: Request, res: Response, next: NextFunction): void => {
     const authHeader = req.headers.authorization;
-    
+
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({
-        message: "Access denied, no token provided or invalid format",
+      res.status(401).json({
+        message: "Invalid token",
       });
-    } 
+      return;
+    }
 
     const token = authHeader.split(" ")[1];
 
@@ -22,15 +21,15 @@ const protectRoute = (roles: RoleType[] = [RoleEnum[0]]) => {
       req.user = decoded;
 
       if (!roles.includes(decoded.role)) {
-        return res
-          .status(403)
-          .json({ message: "Forbidden: You do not have the right role" });
+        res.status(403).json({ message: "Forbidden: You do not have the right role" });
+        return;
       }
 
       next();
     } catch (err) {
-      console.log("error: ", err)
+      console.error("JWT Error:", err);
       res.status(401).json({ message: "Invalid token" });
+      return;
     }
   };
 };

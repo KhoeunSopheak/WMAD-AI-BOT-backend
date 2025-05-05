@@ -18,7 +18,7 @@ export class StudentModel {
     this.student = student;
   }
 
-  async register(): Promise<void> {
+  async create(): Promise<void> {
     if (!this.student) {
       throw new Error("Student data is required to register a student.");
     }
@@ -41,6 +41,13 @@ export class StudentModel {
 
     await pool.query(query, values);
   }
+
+  async getAll(): Promise<Student[]> {
+    const query = `SELECT * FROM students ORDER BY created_at DESC`;
+    const result = await pool.query(query);
+    return result.rows;
+  }
+
 
   async findByUserId(user_id: string): Promise<Student | null> {
     const query = `SELECT * FROM students WHERE user_id = $1`;
