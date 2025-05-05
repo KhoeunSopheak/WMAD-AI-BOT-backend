@@ -22,6 +22,20 @@ const loginSchema = z.object({
   password: z.string().min(8),
 });
 
+const studentSchema = z.object({
+  studentcard_id: z.number(),
+  full_name: z.string().min(3),
+  school: z.string(),
+  skill: z.string(),
+});
+
+const teacherSchema = z.object({
+  teachercard_id: z.number(),
+  full_name: z.string().min(3),
+  school: z.string(),
+  course: z.string(),
+});
+
 
 export const validateUser = (
   req: Request,
@@ -57,5 +71,38 @@ export const validateLogin = (
   }
 };
 
+export const validateStudent = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
+  try {
+    teacherSchema.parse(req.body);
+    next();
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ message: error.errors[0].message });
+      return;
+    }
+    next(error);
+  }
+};
+
+export const validateTeacher = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
+  try {
+    teacherSchema.parse(req.body);
+    next();
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ message: error.errors[0].message });
+      return;
+    }
+    next(error);
+  }
+};
 
 
