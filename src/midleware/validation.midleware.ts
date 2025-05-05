@@ -24,23 +24,14 @@ const loginSchema = z.object({
 
 const studentSchema = z.object({
   studentcard_id: z.string()
-  .regex(/^\d+-\d+$/, {
-    message: "Id must be numbers, a dash (-), and numbers",
-  }),
+    .regex(/^(\d+-\d+|00\d+)$/, {
+      message: "Invalid ID card",
+    }),
   full_name: z.string().min(3),
   school: z.string(),
   skill: z.string()
 });
 
-const teacherSchema = z.object({
-  teachercard_id: z.string()
-    .regex(/^00\d+$/, {
-      message: "Invalid Id",
-    }),
-  full_name: z.string().min(3),
-  school: z.string(),
-  course: z.string(),
-});
 
 
 export const validateUser = (
@@ -94,21 +85,5 @@ export const validateStudent = (
   }
 };
 
-export const validateTeacher = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void => {
-  try {
-    teacherSchema.parse(req.body);
-    next();
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      res.status(400).json({ message: error.errors[0].message });
-      return;
-    }
-    next(error);
-  }
-};
 
 
