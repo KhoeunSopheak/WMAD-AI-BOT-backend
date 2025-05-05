@@ -13,9 +13,9 @@ import { validateTeacher } from "../midleware/validation.midleware";
 const router = Router();
 
 router.post("/", protectRoute([RoleEnum[0]]), validateTeacher, createTeacher);
-router.get("/", protectRoute([RoleEnum[0]]), validateTeacher, getAllTeachers);
-router.get("/:id",protectRoute([RoleEnum[0]]), validateTeacher, getTeacherById);
+router.get("/", protectRoute([RoleEnum[0]]), getAllTeachers);
+router.get("/:id",protectRoute([RoleEnum[0]]), getTeacherById);
 router.put("/:id",protectRoute([RoleEnum[0]]), validateTeacher, updateTeacher);
-router.delete("/:id",protectRoute([RoleEnum[0]]), validateTeacher, deleteTeacher);
+router.delete("/:id",protectRoute([RoleEnum[0]]), deleteTeacher);
 
 export default router;
