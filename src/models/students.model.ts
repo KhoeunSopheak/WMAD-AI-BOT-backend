@@ -2,7 +2,7 @@ import { pool } from "../config/db";
 
 export interface Student {
   id: string;
-  studentcard_id: number;
+  studentcard_id: string;
   user_id: string;
   full_name: string;
   school: string;
