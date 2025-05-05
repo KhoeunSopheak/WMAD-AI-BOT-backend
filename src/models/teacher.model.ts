@@ -50,15 +50,21 @@ export class TeacherModel {
         return result.rows;
       }
     
-    async findById(): Promise<Teacher | null> {
+    async findById(id: string): Promise<Teacher | null> {
         const query = `SELECT * FROM teachers WHERE id = $1`;
-        const result = await pool.query(query);
+        const result = await pool.query(query, [id]);
         const rows = result.rows;
         return rows.length > 0 ? rows[0] : null;    
     }
 
+    async findByUserId(user_id: string): Promise<Teacher | null> {
+        const query = `SELECT * FROM teachers WHERE id = $1`;
+        const result = await pool.query(query, [user_id]);
+        const rows = result.rows;
+        return rows.length > 0 ? rows[0] : null;    
+    }
 
-  async update(): Promise<Teacher | null> {
+  async update(): Promise<void> {
     if (!this.teacher) throw new Error("Teacher data is required");
 
     const query = `
@@ -80,9 +86,16 @@ export class TeacherModel {
       this.teacher.id,
     ];
 
-    const result = await pool.query(query, values);
-
-    return result.rows.length > 0 ? result.rows[0] : null;
+    await pool.query(query, values);
   }
-}
 
+  async delete(): Promise<void> {
+    if (!this.teacher?.id) {
+      throw new Error("Teacher ID is required to delete.");
+    }
+
+    const query = `DELETE FROM teachers WHERE id = $1`;
+    await pool.query(query, [this.teacher.id]);
+  }
+
+}
