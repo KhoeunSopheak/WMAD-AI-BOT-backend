@@ -48,6 +48,18 @@ CREATE TABLE chats (
   CONSTRAINT fk_chat_student FOREIGN KEY (student_id) REFERENCES students(id)
 );
 
+#updates
+CREATE TABLE chats (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_message TEXT,
+  user_id UUID NOT NULL,
+  ai_response TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_chat_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+
 #blogs
 CREATE TABLE blocks (
   id SERIAL PRIMARY KEY,

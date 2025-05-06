@@ -2,9 +2,9 @@ import { pool } from "../config/db";
 
 export interface Chat {
   id: string;
-  student_message: string;
-  ai_message: string;
-  student_id: string;
+  user_message: string;
+  user_id: string;
+  ai_response: string;
   created_at: Date;
   updated_at: Date;
 }
@@ -22,16 +22,16 @@ export class ChatModel {
     }
 
     const query = `
-      INSERT INTO chats (id, student_message, ai_message, student_id, created_at, updated_at)
+      INSERT INTO chats (id, user_message, user_id, ai_response, created_at, updated_at)
       VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *;
     `;
 
     const values = [
       this.chat.id,
-      this.chat.student_message,
-      this.chat.ai_message,
-      this.chat.student_id,
+      this.chat.user_message,
+      this.chat.user_id,
+      this.chat.ai_response,
       this.chat.created_at,
       this.chat.updated_at,
     ];
@@ -39,14 +39,14 @@ export class ChatModel {
     await pool.query(query, values);
   }
 
-  static async getChatsByStudent(student_id: string): Promise<Chat[]> {
+  static async getChatsByUser(user_id: string): Promise<Chat[]> {
     const query = `
       SELECT * FROM chats
-      WHERE student_id = $1
+      WHERE user_id = $1
       ORDER BY created_at ASC;
     `;
 
-    const result = await pool.query(query, [student_id]);
+    const result = await pool.query(query, [user_id]);
     return result.rows as Chat[];
   }
 }

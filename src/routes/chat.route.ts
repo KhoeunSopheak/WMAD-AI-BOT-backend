@@ -5,6 +5,6 @@ import { askQuery } from "../controllers/chat.controller";
 
 const router = Router();
 
-router.post("/:student_id/askQuery", protectRoute([RoleEnum[0]]), askQuery);
+router.post("/askQuery", protectRoute([RoleEnum[0]]), askQuery);
 
 export default router;
