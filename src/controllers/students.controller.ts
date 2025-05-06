@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { StudentModel } from "../models/students.model";
+import { StudentModel } from "../models/student.model";
 import { v4 as uuidv4 } from "uuid";
 
 export const create = async (req: Request, res: Response) => {
