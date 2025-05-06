@@ -56,3 +56,23 @@ CREATE TABLE quizzes (
 
 CREATE INDEX idx_quizzes_user_id ON quizzes(user_id);
 CREATE INDEX idx_quizzes_topic ON quizzes(topic);
+
+
+CREATE TABLE roadmaps (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID,
+    title TEXT,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE milestones (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    title TEXT,
+    description TEXT,
+    roadmap_id UUID,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP,
+    FOREIGN KEY (roadmap_id) REFERENCES roadmaps(id)
+);
