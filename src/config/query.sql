@@ -36,3 +36,23 @@ CREATE TABLE teachers (
 
   CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES "users"(id)
 );
+
+#Quiz
+CREATE TABLE quizzes (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL,  
+    topic VARCHAR(100) NOT NULL,
+    question TEXT NOT NULL,
+    options JSONB NOT NULL,
+    correct_answer VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE,
+    
+    CONSTRAINT fk_user 
+        FOREIGN KEY (user_id) 
+        REFERENCES users(id)
+        ON DELETE CASCADE
+);
+
+CREATE INDEX idx_quizzes_user_id ON quizzes(user_id);
+CREATE INDEX idx_quizzes_topic ON quizzes(topic);
