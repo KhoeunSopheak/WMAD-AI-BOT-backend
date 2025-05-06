@@ -3,7 +3,6 @@ import authRouter from "./src/routes/auth.route";
 import studentRoute from './src/routes/students.route';
 import quizzRoute from './src/routes/quizzes.route';
 import chatRoute from './src/routes/chat.route';
-import milestonteRoute from './src/routes/milestone.route';
 import roadmapRoute from './src/routes/roadmap.route';
 
 const app = express();
@@ -17,7 +16,6 @@ app.use("/api/auth", authRouter);
 app.use("/api/users/students", studentRoute);
 app.use("/api/users/quizzes", quizzRoute);
 app.use('/api/chat', chatRoute);
-app.use("/api/users/milestone", milestonteRoute);
 app.use('/api/users/chats', chatRoute);
 app.use("/api/users/roadmaps", roadmapRoute);
 
