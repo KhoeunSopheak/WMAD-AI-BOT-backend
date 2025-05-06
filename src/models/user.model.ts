@@ -13,7 +13,6 @@ export interface User {
 
 export class UserModel {
   private user?: User;
-  static user: any;
 
   constructor(user?: User) {
     this.user = user;

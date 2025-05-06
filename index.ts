@@ -1,6 +1,7 @@
 import express from 'express';
 import authRouter from "./src/routes/auth.route";
 import studentRoute from './src/routes/students.route';
+import quizzRoute from './src/routes/quizzes.route';
 import chatRoute from './src/routes/chat.route';
 
 const app = express();
@@ -12,6 +13,7 @@ app.use(express.json());
 // Routes
 app.use("/api/auth", authRouter);
 app.use("/api/users/students", studentRoute);
+app.use("/api/users/quizzes", quizzRoute)
 app.use('/api/chat', chatRoute)
 
 // Start server
