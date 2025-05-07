@@ -23,32 +23,24 @@ CREATE TABLE students (
   CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES "users"(id)
 );
 
-#teachers
-CREATE TABLE teachers (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  teachercard_id INT,
-  user_id UUID NOT NULL,
-  full_name VARCHAR(50),
-  school VARCHAR(100),
-  course VARCHAR(50),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-  CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES "users"(id)
+#Quiz
+CREATE TABLE quizzes (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL,  
+    topic VARCHAR(100) NOT NULL,
+    question TEXT NOT NULL,
+    options JSONB NOT NULL,
+    correct_answer VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE,
+    
+    CONSTRAINT fk_user 
+        FOREIGN KEY (user_id) 
+        REFERENCES users(id)
+        ON DELETE CASCADE
 );
 
 #chats
-CREATE TABLE chats (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  student_message TEXT,
-	student_id UUID NOT NULL,
-	ai_message TEXT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT fk_chat_student FOREIGN KEY (student_id) REFERENCES students(id)
-);
-
-#updates
 CREATE TABLE chats (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_message TEXT,
@@ -61,19 +53,14 @@ CREATE TABLE chats (
 
 ALTER TABLE roadmaps ADD COLUMN milestone JSONB NOT NULL;
 
-
-
-
-#blogs
+#blocks
 CREATE TABLE blocks (
-  id SERIAL PRIMARY KEY,
-  student_id INT NOT NULL,
-  title TEXT,
-  content TEXT,
-  chat_id INT,
-  status VARCHAR(20),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL,
+  user_message TEXT,
+  chat_id UUID NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT fk_block FOREIGN KEY (student_id) REFERENCES students(id),
+  CONSTRAINT fk_block FOREIGN KEY (user_id) REFERENCES users(id),
   CONSTRAINT fk_block_chat FOREIGN KEY (chat_id) REFERENCES chats(id)
 );
