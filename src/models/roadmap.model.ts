@@ -4,6 +4,7 @@ export interface Roadmap {
     id: string;
     user_id: string;
     title: string;
+    milestone: string[];
     created_at: Date;
     updated_at: Date | null;
 }
@@ -19,14 +20,14 @@ export class RoadmapModel {
         if (!this.roadmap) {
             throw new Error('Roadmap data is missing.');
         }
-        const { id, user_id, title, created_at, updated_at } = this.roadmap;
+        const { id, user_id, title, milestone, created_at, updated_at } = this.roadmap;
 
         const query = `
-            INSERT INTO roadmaps (id, user_id, title, created_at, updated_at)
-            VALUES ($1, $2, $3, $4, $5)
+            INSERT INTO roadmaps (id, user_id, title, milestone, created_at, updated_at)
+            VALUES ($1, $2, $3, $4, $5, $6)
         `;
 
-        const values = [id, user_id, title, created_at, updated_at];
+        const values = [id, user_id, title, milestone, created_at, updated_at];
         await pool.query(query, values);
     }
 
