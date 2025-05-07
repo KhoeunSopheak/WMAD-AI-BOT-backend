@@ -7,7 +7,7 @@ export const getRoadmapOptions = async (req: Request, res: Response) => {
     const { title } = req.body;
     const user_id = req.user?.id;
 
-    console.log('======>',user_id)
+    console.log('======>', user_id)
 
     if (!title) {
         res.status(400).json({ message: "Title is required." });
@@ -21,17 +21,18 @@ export const getRoadmapOptions = async (req: Request, res: Response) => {
 
     try {
         const prompt = `
-          Suggest 2 creative roadmap titles for the topic "${title}".
-          Give only the titles as a numbered list without explanation.
+             Suggest a step-by-step milestone plan for learning the topic "${title}".
+             List important concepts or skills to master, presented in order of learning.
+             Give the milestones as a numbered list without explanations.
         `;
 
         const aiResponse = await ollamaNoStream([{ role: "user", content: prompt }]);
         const aiText = aiResponse.message.content.trim();
 
         const roadmapTitles = aiText
-          .split('\n')
-          .map(line => line.replace(/^\d+\.\s*/, "").trim())
-          .filter(title => title.length > 0);
+            .split('\n')
+            .map(line => line.replace(/^\d+\.\s*/, "").trim())
+            .filter(title => title.length > 0);
 
         const created_at = new Date();
         const updated_at = new Date();
@@ -42,7 +43,8 @@ export const getRoadmapOptions = async (req: Request, res: Response) => {
             const roadmapModel = new RoadmapModel({
                 id: uuidv4(),
                 user_id,
-                title: roadmapTitle,
+                title,
+                milestone: [roadmapTitle],
                 created_at,
                 updated_at,
             });

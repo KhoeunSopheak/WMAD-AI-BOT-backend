@@ -59,6 +59,9 @@ CREATE TABLE chats (
   CONSTRAINT fk_chat_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+ALTER TABLE roadmaps ADD COLUMN milestone TEXT[];
+
+
 
 #blogs
 CREATE TABLE blocks (
