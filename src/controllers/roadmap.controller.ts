@@ -79,7 +79,8 @@ export const getByIdRoadmap = async (req: Request, res: Response) => {
             return;
         }
 
-        res.status(200).json(roadmap);
+        res.status(200).json({message:"Get Roadmap successfully",roadmap});
+        return;
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal Server Error" });
@@ -92,14 +93,14 @@ export const getRoadmapByUserId = async (req: Request, res: Response) => {
 
     try {
         const roadmapModel = new RoadmapModel();
-        const userRoadmap = await roadmapModel.findByUserId(user_id);
+        const roadmaps = await roadmapModel.findByUserId(user_id);
 
-        if (!userRoadmap) {
+        if (!roadmaps) {
             res.status(404).json({ message: "Roadmap not found." });
             return;
         }
 
-        res.status(200).json(userRoadmap);
+        res.status(200).json(roadmaps);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal Server Error" });

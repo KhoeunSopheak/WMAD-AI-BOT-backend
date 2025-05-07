@@ -49,5 +49,5 @@ export class RoadmapModel {
         `;
         const { rows } = await pool.query(query, [user_id]);
         return rows as Roadmap[];
-    }    
+    }   
 }

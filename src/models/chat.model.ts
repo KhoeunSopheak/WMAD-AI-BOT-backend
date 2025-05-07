@@ -39,7 +39,7 @@ export class ChatModel {
     await pool.query(query, values);
   }
 
-  static async getChatsByUser(user_id: string): Promise<Chat[]> {
+  async findChatsByUser(user_id: string): Promise<Chat[]> {
     const query = `
       SELECT * FROM chats
       WHERE user_id = $1
