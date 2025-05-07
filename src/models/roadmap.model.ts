@@ -27,8 +27,9 @@ export class RoadmapModel {
             VALUES ($1, $2, $3, $4, $5, $6)
         `;
 
-        const values = [id, user_id, title, milestone, created_at, updated_at];
-        await pool.query(query, values);
+        const values = [id, user_id, title, JSON.stringify(milestone), created_at, updated_at];
+
+         await pool.query(query, values);
     }
 
     async findById(id: string): Promise<Roadmap | null> {

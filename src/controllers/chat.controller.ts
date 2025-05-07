@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 
 export const askQuery = async (req: Request, res: Response) => {
   const { user_message, isStream = false } = req.body;
-  const  user_id   = req.user?.id;
+  const user_id = req.user?.id;
   const id = uuidv4();
   const created_at = new Date();
   const updated_at = new Date();
@@ -20,12 +20,24 @@ export const askQuery = async (req: Request, res: Response) => {
     if (isStream) {
       await ollamaStream([{ role: 'user', content: user_message }], res);
     } else {
+      res.setHeader("Content-Type", "text/event-stream");
+      res.setHeader("Cache-Control", "no-cache");
+      res.setHeader("Connection", "keep-alive");
       const response = await ollamaNoStream([{ role: 'user', content: user_message }]);
+
+      const words = response.message.content.split(" ");
+      let currentText = "";
+
+      for (let i = 0; i < words.length; i++) {
+        currentText += words[i] + " ";
+        res.write(`data: ${JSON.stringify({ message: currentText.trim() })}\n\n`);
+        await new Promise((resolve) => setTimeout(resolve, 30));
+      }
 
       const chatModel = new ChatModel({
         id,
-        user_message, 
-        user_id, 
+        user_message,
+        user_id,
         ai_response: response.message.content,
         created_at,
         updated_at,
