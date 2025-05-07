@@ -49,12 +49,5 @@ export class RoadmapModel {
         `;
         const { rows } = await pool.query(query, [user_id]);
         return rows as Roadmap[];
-    }
-
-    async findByTitle(title: string): Promise<Roadmap | null> {
-        const query = `SELECT * FROM roadmaps WHERE title = $1 LIMIT 1`;
-        const result = await pool.query(query, [title]);
-        return result.rows[0] ?? null;
-      }
-      
+    }    
 }

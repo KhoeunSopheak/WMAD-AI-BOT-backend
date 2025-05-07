@@ -45,18 +45,18 @@ export const getRoadmapOptions = async (req: Request, res: Response) => {
         const created_at = new Date();
         const updated_at = new Date();
 
-            const roadmapModel = new RoadmapModel({
-                id: uuidv4(),
-                user_id,
-                title,
-                milestone: roadmapTitles,
-                created_at,
-                updated_at,
-            });
+        const roadmapModel = new RoadmapModel({
+            id: uuidv4(),
+            user_id,
+            title,
+            milestone: roadmapTitles,
+            created_at,
+            updated_at,
+        });
 
-            console.log("<=======>",roadmapModel)
+        console.log("<=======>", roadmapModel)
 
-            await roadmapModel.createRoadmap();
+        await roadmapModel.createRoadmap();
 
         res.status(200).json({ roadmaps: roadmapModel });
     } catch (error) {
@@ -67,6 +67,8 @@ export const getRoadmapOptions = async (req: Request, res: Response) => {
 
 export const getByIdRoadmap = async (req: Request, res: Response) => {
     const { id } = req.params;
+
+    console.log("Roadmap Id:", id);
 
     try {
         const roadmapModel = new RoadmapModel();
@@ -82,7 +84,7 @@ export const getByIdRoadmap = async (req: Request, res: Response) => {
         console.error(error);
         res.status(500).json({ message: "Internal Server Error" });
     }
-      
+
 };
 
 export const getRoadmapByUserId = async (req: Request, res: Response) => {
@@ -90,14 +92,14 @@ export const getRoadmapByUserId = async (req: Request, res: Response) => {
 
     try {
         const roadmapModel = new RoadmapModel();
-        const roadmap = await roadmapModel.findByUserId(user_id);
+        const userRoadmap = await roadmapModel.findByUserId(user_id);
 
-        if (!roadmap) {
+        if (!userRoadmap) {
             res.status(404).json({ message: "Roadmap not found." });
             return;
         }
 
-        res.status(200).json(roadmap);
+        res.status(200).json(userRoadmap);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal Server Error" });

@@ -15,7 +15,6 @@ app.use(express.json());
 app.use("/api/auth", authRouter);
 app.use("/api/users/students", studentRoute);
 app.use("/api/users/quizzes", quizzRoute);
-app.use('/api/chat', chatRoute);
 app.use('/api/users/chats', chatRoute);
 app.use("/api/users/roadmaps", roadmapRoute);
 
