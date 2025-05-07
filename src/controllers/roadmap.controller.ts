@@ -82,6 +82,7 @@ export const getByIdRoadmap = async (req: Request, res: Response) => {
         console.error(error);
         res.status(500).json({ message: "Internal Server Error" });
     }
+      
 };
 
 export const getRoadmapByUserId = async (req: Request, res: Response) => {
@@ -102,3 +103,4 @@ export const getRoadmapByUserId = async (req: Request, res: Response) => {
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
+
