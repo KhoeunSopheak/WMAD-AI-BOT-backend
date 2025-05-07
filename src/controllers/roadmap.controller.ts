@@ -24,36 +24,41 @@ export const getRoadmapOptions = async (req: Request, res: Response) => {
              Suggest a step-by-step milestone plan for learning the topic "${title}".
              List important concepts or skills to master, presented in order of learning.
              Give the milestones as a numbered list without explanations.
+             Do not include any introductions or conclusions — only the milestones.
         `;
 
         const aiResponse = await ollamaNoStream([{ role: "user", content: prompt }]);
+
+        console.log("AI Response:", aiResponse);
+
         const aiText = aiResponse.message.content.trim();
+
+        console.log("aiText:", aiText);
 
         const roadmapTitles = aiText
             .split('\n')
             .map(line => line.replace(/^\d+\.\s*/, "").trim())
             .filter(title => title.length > 0);
 
+        console.log("======>", roadmapTitles);
+
         const created_at = new Date();
         const updated_at = new Date();
 
-        const savedRoadmaps = [];
-
-        for (const roadmapTitle of roadmapTitles) {
             const roadmapModel = new RoadmapModel({
                 id: uuidv4(),
                 user_id,
                 title,
-                milestone: [roadmapTitle],
+                milestone: roadmapTitles,
                 created_at,
                 updated_at,
             });
 
-            const savedRoadmap = await roadmapModel.createRoadmap();
-            savedRoadmaps.push(savedRoadmap);
-        }
+            console.log("<=======>",roadmapModel)
 
-        res.status(200).json({ roadmaps: savedRoadmaps });
+            await roadmapModel.createRoadmap();
+
+        res.status(200).json({ roadmaps: roadmapModel });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Failed to generate and save roadmaps." });
@@ -66,6 +71,25 @@ export const getByIdRoadmap = async (req: Request, res: Response) => {
     try {
         const roadmapModel = new RoadmapModel();
         const roadmap = await roadmapModel.findById(id);
+
+        if (!roadmap) {
+            res.status(404).json({ message: "Roadmap not found." });
+            return;
+        }
+
+        res.status(200).json(roadmap);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+export const getRoadmapByUserId = async (req: Request, res: Response) => {
+    const { user_id } = req.params;
+
+    try {
+        const roadmapModel = new RoadmapModel();
+        const roadmap = await roadmapModel.findByUserId(user_id);
 
         if (!roadmap) {
             res.status(404).json({ message: "Roadmap not found." });
