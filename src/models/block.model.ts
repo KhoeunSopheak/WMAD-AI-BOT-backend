@@ -36,10 +36,29 @@ export class BlockModel {
     await pool.query(query, values);
   }
 
+  async findAllBlocks(): Promise<Block[]> {
+    const query = `SELECT * FROM blocks ORDER BY created_at DESC`;
+    const result = await pool.query(query);
+    return result.rows;
+  }
+
+  async findBlockById(id: string): Promise<Block | null> {
+    const query = `SELECT * FROM blocks WHERE id = $1`;
+    const result = await pool.query(query, [id]);
+    const rows = result.rows;
+    return rows.length > 0 ? rows[0] : null;
+  }
+
   async findBlockByUser(user_id: string): Promise<Block | null> {
     const query = `SELECT * FROM blocks WHERE user_id = $1`;
     const result = await pool.query(query, [user_id]);
     const rows = result.rows;
     return rows.length > 0 ? rows[0] : null;
   }
+
+  async deleteBlock(id: string): Promise<void> {
+    const query = `DELETE FROM blocks WHERE id = $1`;
+    await pool.query(query, [id]);
+  }
+  
 }
