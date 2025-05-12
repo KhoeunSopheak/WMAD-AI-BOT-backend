@@ -42,6 +42,13 @@ export class BlockModel {
     return result.rows;
   }
 
+  async countAllBlocks(): Promise<number> {
+    const query = `SELECT COUNT(*) FROM blocks`;
+    const result = await pool.query(query);
+    return parseInt(result.rows[0].count, 10);
+  }
+  
+
   async findBlockById(id: string): Promise<Block | null> {
     const query = `SELECT * FROM blocks WHERE id = $1`;
     const result = await pool.query(query, [id]);

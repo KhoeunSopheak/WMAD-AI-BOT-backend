@@ -31,6 +31,18 @@ export const getBlockByUserId = async (req: Request, res: Response) => {
       res.status(500).json({ message: "Internal Server Error" });
     }
   }
+
+  export const totalAllBlocks = async (req: Request, res: Response) => {
+    try {
+      const blockModel = new BlockModel();
+      const total = await blockModel.countAllBlocks();
+  
+      res.status(200).json({message: "Get total block successfully", total});
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
   
   export const getBlockById = async (req: Request, res: Response) => {
     const { id } = req.params;

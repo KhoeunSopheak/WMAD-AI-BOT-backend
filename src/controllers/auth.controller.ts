@@ -38,6 +38,18 @@ export const register = async (req: Request, res: Response) => {
   }
 };
 
+export const totalAllUsers = async (req: Request, res: Response) => {
+    try {
+      const userModel = new UserModel();
+      const total = await userModel.countAllUsers();
+  
+      res.status(200).json({message: "Get total user successfully", total});
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
 export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
   const userModel = new UserModel();

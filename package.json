@@ -12,6 +12,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "bad-words": "^4.0.0",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
@@ -20,6 +21,7 @@
     "ollama": "^0.5.15",
     "pg": "^8.15.6",
     "uuid": "^11.1.0",
+    "word": "^0.4.0",
     "zod": "^3.24.3"
   },
   "devDependencies": {
