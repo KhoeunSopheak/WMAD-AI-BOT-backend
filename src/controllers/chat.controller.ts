@@ -3,7 +3,7 @@ import { ollamaNoStream, ollamaStream } from "../service/ollamaChat";
 import { ChatModel } from "../models/chat.model";
 import { v4 as uuidv4 } from "uuid";
 import { BlockModel } from "../models/block.model";
-import Filter from 'bad-words';
+import {Filter} from 'bad-words';
 
 
 export const askQuery = async (req: Request, res: Response) => {
@@ -80,9 +80,14 @@ export const askQuery = async (req: Request, res: Response) => {
   }
 
   const filter = new Filter();
-  const hasBadWord = filter.isProfane(user_message);
+  const isProfane = filter.isProfane(user_message);
+  const cleanedText = filter.clean(user_message);
 
-  if (hasBadWord) {
+  console.log('isProfane', isProfane);
+  console.log('cleanedText', cleanedText);
+
+
+  if (isProfane) {
     const blocksModel = new BlockModel({
       id,
       user_id,
