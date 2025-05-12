@@ -65,6 +65,18 @@ export const getRoadmapOptions = async (req: Request, res: Response) => {
     }
 };
 
+export const getAllRoadmaps = async (_req: Request, res: Response) => {
+  try {
+    const roadmapModel = new RoadmapModel();
+    const roadmaps = await roadmapModel.findAllRoadmap();
+
+    res.status(200).json({ message: "Get all roadmap successfully", roadmaps });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 export const getByIdRoadmap = async (req: Request, res: Response) => {
     const { id } = req.params;
 

@@ -50,6 +50,12 @@ export class UserModel {
     return rows.length > 0 ? rows[0] : null;
   }
 
+  async findAllUser(): Promise<User[]> {
+    const query = `SELECT * FROM users ORDER BY created_at DESC`;
+    const result = await pool.query(query);
+    return result.rows;
+  }
+
   async countAllUsers(): Promise<number> {
     const query = `SELECT COUNT(*) FROM users`;
     const result = await pool.query(query);
