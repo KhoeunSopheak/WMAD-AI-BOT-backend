@@ -13,11 +13,11 @@ const PORT = 3003;
 
 
 const limiter = rateLimit({
- windowMs: 15 * 60 * 1000, // 15 minutes
- limit: 3, // Limit each IP to 100 requests per window (here, per 15 minutes).
- standardHeaders: 'draft-8', // draft-6: RateLimit-* headers; draft-7 & draft-8: combined RateLimit header
- legacyHeaders: false, // Disable the X-RateLimit-* headers.
- // store: ... , // Redis, Memcached, etc. See below.
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 100, // Limit each IP to 100 requests per window (here, per 15 minutes).
+  standardHeaders: 'draft-8', // draft-6: RateLimit-* headers; draft-7 & draft-8: combined RateLimit header
+  legacyHeaders: false, // Disable the X-RateLimit-* headers.
+  // store: ... , // Redis, Memcached, etc. See below.
 })
 
 // Apply the rate limiting middleware to all requests.
@@ -27,8 +27,13 @@ app.use(limiter)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })) // for form data
 var corsOptions = {
-  origin: "*",
+  origin: "http://localhost:3002", // your frontend URL
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+  credentials: true, // if you use cookies, auth, etc.
 };
+
+app.use(cors(corsOptions));
+
 
 app.use(cors(corsOptions));
 

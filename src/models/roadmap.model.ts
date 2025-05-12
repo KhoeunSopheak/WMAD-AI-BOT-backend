@@ -29,7 +29,13 @@ export class RoadmapModel {
 
         const values = [id, user_id, title, JSON.stringify(milestone), created_at, updated_at];
 
-         await pool.query(query, values);
+        await pool.query(query, values);
+    }
+
+    async findAllRoadmap(): Promise<Roadmap[]> {
+        const query = `SELECT * FROM roadmaps ORDER BY created_at DESC`;
+        const result = await pool.query(query);
+        return result.rows;
     }
 
     async findById(id: string): Promise<Roadmap | null> {
@@ -49,5 +55,5 @@ export class RoadmapModel {
         `;
         const { rows } = await pool.query(query, [user_id]);
         return rows as Roadmap[];
-    }   
+    }
 }

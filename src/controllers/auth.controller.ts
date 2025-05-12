@@ -24,31 +24,43 @@ export const register = async (req: Request, res: Response) => {
 
     const existingUser = await userModel.findByEmail(email);
     if (existingUser) {
-       res.status(400).json({ message: "Email already registered" });
-       return;
+      res.status(400).json({ message: "Email already registered" });
+      return;
     }
 
     await userModel.register();
 
-     res.status(201).json({ message: "User registered successfully" });
+    res.status(201).json({ message: "User registered successfully" });
   } catch (error) {
     console.error(error);
-     res.status(500).json({ message: "Internal Server Error" });
-     return;
+    res.status(500).json({ message: "Internal Server Error" });
+    return;
+  }
+};
+
+export const getAllUsers = async (_req: Request, res: Response) => {
+  try {
+    const userModel = new UserModel();
+    const users = await userModel.findAllUser();
+
+    res.status(200).json({ message: "Get all user successfully", users });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
 export const totalAllUsers = async (req: Request, res: Response) => {
-    try {
-      const userModel = new UserModel();
-      const total = await userModel.countAllUsers();
-  
-      res.status(200).json({message: "Get total user successfully", total});
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal Server Error" });
-    }
+  try {
+    const userModel = new UserModel();
+    const total = await userModel.countAllUsers();
+
+    res.status(200).json({ message: "Get total user successfully", total });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
+}
 
 export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -57,22 +69,22 @@ export const login = async (req: Request, res: Response) => {
   try {
     const { isValid, user } = await userModel.validateLogin(email, password);
     if (!isValid || !user) {
-       res.status(401).json({ message: "Invalid credentials" });
-       return;
+      res.status(401).json({ message: "Invalid credentials" });
+      return;
     }
 
-    const tokenPayload: TokenPayload = { 
+    const tokenPayload: TokenPayload = {
       id: user.id || "",
       role: user.role as RoleType,
     };
 
     const token = generateToken(tokenPayload);
-     res.status(200).json({ message: "Login successful", token });
-     return;
+    res.status(200).json({ message: "Login successful", token });
+    return;
   } catch (error) {
     console.error(error);
-     res.status(500).json({ message: "Internal Server Error" });
-     return;
+    res.status(500).json({ message: "Internal Server Error" });
+    return;
   }
 };
 
