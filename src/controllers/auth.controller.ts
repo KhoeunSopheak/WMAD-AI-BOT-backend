@@ -79,7 +79,7 @@ export const login = async (req: Request, res: Response) => {
     };
 
     const token = generateToken(tokenPayload);
-    res.status(200).json({ message: "Login successful", token });
+    res.status(200).json({ message: "Login successful", token, role: user.role });
     return;
   } catch (error) {
     console.error(error);
