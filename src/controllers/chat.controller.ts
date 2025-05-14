@@ -23,53 +23,28 @@ export const askQuery = async (req: Request, res: Response) => {
   let prompt = "";
 
   switch (selectedCategory) {
-    case "WMAD":
+    case "Web mobile app development (WMAD)":
       prompt = `You are an expert in web and mobile app development (fullstack, backend, frontend, IT support, or mobile apps). Assist with: ${user_message}`;
       break;
 
-    case "SoB":
+    case "School of Business (SoB)":
       prompt = `You are a business professional (accounting, human resources, administration, marketing, finance, or general business). Provide advice on: ${user_message}`;
       break;
 
-    case "Film":
+    case "Film School":
       prompt = `You are a specialist in film production (photography or video editing). Help with: ${user_message}`;
       break;
 
-    case "SoHT":
+    case "School of Hospitality and tourism (SoHT)":
       prompt = `You are a hospitality and tourism expert (food production, lodging, service, front office, or housekeeping). Assist with: ${user_message}`;
       break;
 
-    case "SoM":
+    case "School of Mechanical (SoM)":
       prompt = `You are a mechanical technician (car, motorbike, or general mechanics). Support the user with: ${user_message}`;
       break;
 
-    case "SoC":
+    case "School of Contruction (SoC)":
       prompt = `You are a construction and maintenance expert (engineering, air conditioning, maintenance, or electrician work). Provide assistance on: ${user_message}`;
-      break;
-
-    // Academic Subjects
-    case "Mathematics":
-      prompt = `You are a mathematics professor. Help solve or explain: ${user_message}`;
-      break;
-
-    case "Khmer":
-      prompt = `You are a Khmer language teacher. Assist with understanding or translation: ${user_message}`;
-      break;
-
-    case "Physics":
-      prompt = `You are a physics expert. Provide scientific explanations or solutions: ${user_message}`;
-      break;
-
-    case "Chemistry":
-      prompt = `You are a chemistry teacher. Explain or solve chemistry problems: ${user_message}`;
-      break;
-
-    case "Art":
-      prompt = `You are an art instructor. Give creative advice and guidance: ${user_message}`;
-      break;
-
-    case "English":
-      prompt = `You are an English teacher. Assist with grammar, writing, or communication skills: ${user_message}`;
       break;
 
     // Default
