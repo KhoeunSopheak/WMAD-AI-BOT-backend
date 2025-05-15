@@ -5,10 +5,10 @@ import { RoleEnum } from "../common";
 
 const router = Router();
 
-router.post("/generate-roadmap",protectRoute([RoleEnum[0]]), getRoadmapOptions);
-router.get("/", protectRoute([RoleEnum[0]]), getAllRoadmaps);
-router.get("/:id", protectRoute([RoleEnum[0]]), getByIdRoadmap);
-router.get("/chats/:user_id",protectRoute([RoleEnum[0]]), getRoadmapByUserId);
+router.post("/generate-roadmap",protectRoute([RoleEnum[0], RoleEnum[1]]), getRoadmapOptions);
+router.get("/", protectRoute([RoleEnum[0], RoleEnum[1]]), getAllRoadmaps);
+router.get("/:id", protectRoute([RoleEnum[0], RoleEnum[1]]), getByIdRoadmap);
+router.get("/chats/:user_id",protectRoute([RoleEnum[0], RoleEnum[1]]), getRoadmapByUserId);
 
 
 

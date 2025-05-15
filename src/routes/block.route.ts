@@ -6,11 +6,11 @@ import { deleteBlock, getAllBlocks, getBlockById, getBlockByUserId, totalAllBloc
 
 const router = Router();
 
-router.post("/", protectRoute([RoleEnum[0]]), askQuery);
-router.get("/", protectRoute([RoleEnum[0]]), getAllBlocks);
-router.get("/total", protectRoute([RoleEnum[0]]), totalAllBlocks);
-router.get("/:id", protectRoute([RoleEnum[0]]), getBlockById);
-router.get("/:user_id", protectRoute([RoleEnum[0]]), getBlockByUserId);
-router.delete("remove/:id", protectRoute([RoleEnum[0]]), deleteBlock);
+router.post("/", protectRoute([RoleEnum[1]]), askQuery);
+router.get("/", protectRoute([RoleEnum[1]]), getAllBlocks);
+router.get("/total", protectRoute([RoleEnum[1]]), totalAllBlocks);
+router.get("/:id", protectRoute([RoleEnum[1]]), getBlockById);
+router.get("/:user_id", protectRoute([RoleEnum[1]]), getBlockByUserId);
+router.delete("remove/:id", protectRoute([RoleEnum[1]]), deleteBlock);
 
 export default router;

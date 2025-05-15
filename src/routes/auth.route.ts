@@ -9,7 +9,7 @@ const router = Router();
 
 router.post("/register", validateUser, register);
 router.post("/login", validateLogin, login);
-router.get("/", protectRoute([RoleEnum[0]]), getAllUsers);
-router.get("/total", protectRoute([RoleEnum[0]]), totalAllUsers);
+router.get("/", protectRoute([RoleEnum[1]]), getAllUsers);
+router.get("/total", protectRoute([RoleEnum[1]]), totalAllUsers);
 
 export default router;
