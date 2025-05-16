@@ -1,17 +1,16 @@
 import { Request, Response } from "express";
 import { ollamaNoStream } from "../service/ollamaChat";
-import { RoadmapModel } from "../models/roadmap.model";
+import { RoadmapModel, MilestoneItem } from "../models/roadmap.model";
 import { v4 as uuidv4 } from "uuid";
 
+// Create a roadmap using AI
 export const getRoadmapOptions = async (req: Request, res: Response) => {
     const { title } = req.body;
     const user_id = req.user?.id;
 
-    console.log('======>', user_id)
-
     if (!title) {
-        res.status(400).json({ message: "Title is required." });
-        return;
+         res.status(400).json({ message: "Title is required." });
+         return;
     }
 
     if (!user_id) {
@@ -21,26 +20,41 @@ export const getRoadmapOptions = async (req: Request, res: Response) => {
 
     try {
         const prompt = `
-             Suggest a step-by-step milestone plan for learning the topic "${title}".
-             List important concepts or skills to master, presented in order of learning.
-             Give the milestones as a numbered list without explanations.
-             Do not include any introductions or conclusions — only the milestones.
-        `;
+Generate exactly 10 learning milestones for the topic "${title}".
+Each milestone should start with its number in the title (e.g., "1. Introduction to ...").
+Each milestone must include:
+- A title (starting with the number)
+- A short description of what the learner should achieve in this milestone.
+
+Format the milestones as a numbered list using this format:
+1. Milestone Title – Milestone detail
+Do NOT include any introduction or conclusion — only the 10 milestones.
+`;
 
         const aiResponse = await ollamaNoStream([{ role: "user", content: prompt }]);
-
-        console.log("AI Response:", aiResponse);
-
         const aiText = aiResponse.message.content.trim();
 
-        console.log("aiText:", aiText);
-
-        const roadmapTitles = aiText
+        const milestones: MilestoneItem[] = aiText
             .split('\n')
-            .map(line => line.replace(/^\d+\.\s*/, "").trim())
-            .filter(title => title.length > 0);
+            .map(line => {
+                const match = line.match(/^(\d+)\.\s*(.+?)\s*[–-]\s*(.+)$/); // Match "1. Title – Detail"
+                if (!match) return null;
 
-        console.log("======>", roadmapTitles);
+                const number = match[1].trim();
+                const rawTitle = match[2].trim();
+                const detail = match[3].trim();
+
+                return {
+                    title: `${number}. ${rawTitle}`,
+                    detail,
+                };
+            })
+            .filter((m): m is MilestoneItem => m !== null);
+
+        if (milestones.length !== 10) {
+             res.status(400).json({ message: "AI did not return exactly 10 milestones." });
+             return;
+        }
 
         const created_at = new Date();
         const updated_at = new Date();
@@ -49,38 +63,41 @@ export const getRoadmapOptions = async (req: Request, res: Response) => {
             id: uuidv4(),
             user_id,
             title,
-            milestone: roadmapTitles,
+            milestone: milestones,
             created_at,
             updated_at,
         });
 
-        console.log("<=======>", roadmapModel)
-
         await roadmapModel.createRoadmap();
 
-        res.status(200).json({ roadmaps: roadmapModel });
+         res.status(201).json({
+            message: "Roadmap created successfully",
+            roadmap: roadmapModel['roadmap'],
+        });
+        return;
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Failed to generate and save roadmaps." });
+        console.error("Error generating roadmap:", error);
+         res.status(500).json({ message: "Failed to generate and save roadmap." });
+         return;
     }
 };
 
+// Get all roadmaps
 export const getAllRoadmaps = async (_req: Request, res: Response) => {
-  try {
-    const roadmapModel = new RoadmapModel();
-    const roadmaps = await roadmapModel.findAllRoadmap();
+    try {
+        const roadmapModel = new RoadmapModel();
+        const roadmaps = await roadmapModel.findAllRoadmap();
 
-    res.status(200).json({ message: "Get all roadmap successfully", roadmaps });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
+        res.status(200).json({ message: "Get all roadmap successfully", roadmaps });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
 };
 
+// Get roadmap by ID
 export const getByIdRoadmap = async (req: Request, res: Response) => {
     const { id } = req.params;
-
-    console.log("Roadmap Id:", id);
 
     try {
         const roadmapModel = new RoadmapModel();
@@ -91,15 +108,14 @@ export const getByIdRoadmap = async (req: Request, res: Response) => {
             return;
         }
 
-        res.status(200).json({message:"Get Roadmap successfully",roadmap});
-        return;
+        res.status(200).json({ message: "Get Roadmap successfully", roadmap });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal Server Error" });
     }
-
 };
 
+// Get all roadmaps by user ID
 export const getRoadmapByUserId = async (req: Request, res: Response) => {
     const { user_id } = req.params;
 
@@ -107,15 +123,14 @@ export const getRoadmapByUserId = async (req: Request, res: Response) => {
         const roadmapModel = new RoadmapModel();
         const roadmaps = await roadmapModel.findByUserId(user_id);
 
-        if (!roadmaps) {
+        if (!roadmaps || roadmaps.length === 0) {
             res.status(404).json({ message: "Roadmap not found." });
             return;
         }
 
-        res.status(200).json(roadmaps);
+        res.status(200).json({ message: "Get Roadmap by user successfully", roadmaps });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
-
