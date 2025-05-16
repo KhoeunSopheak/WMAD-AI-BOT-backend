@@ -2,6 +2,7 @@ import { TokenPayload } from "../common/types/user";
 import * as jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 import { RoleEnum, RoleType } from "../common";
+import { UserModel } from "../models/user.model";
 
 const protectRoute = (roles: RoleType[] = [RoleEnum[0]]) => {
   return (req: Request, res: Response, next: NextFunction): void => {
@@ -35,3 +36,23 @@ const protectRoute = (roles: RoleType[] = [RoleEnum[0]]) => {
 };
 
 export default protectRoute;
+
+export const blockIfDisabled = async (req: Request, res: Response, next: NextFunction) => {
+  const userId = req.user?.id; // Get user ID from decoded token (set in protectRoute)
+  const userModel = new UserModel();
+
+  if (!userId) {
+    res.status(401).json({ message: "Unauthorized: No user found in token" });
+    return;
+  }
+
+  const isDisabled = await userModel.isUserDisabled(userId);
+  if (isDisabled) {
+    res.status(403).json({ message: "Access denied. Your account is disabled." });
+    return;
+  }
+
+  next();
+};
+
+

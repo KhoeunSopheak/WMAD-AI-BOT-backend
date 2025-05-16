@@ -37,10 +37,19 @@ export class BlockModel {
   }
 
   async findAllBlocks(): Promise<Block[]> {
-    const query = `SELECT * FROM blocks ORDER BY created_at DESC`;
+    const query = `
+    SELECT 
+      blocks.*,
+      users.full_name
+    FROM blocks
+    JOIN users ON blocks.user_id = users.id
+    ORDER BY blocks.created_at DESC
+  `;
+  
     const result = await pool.query(query);
     return result.rows;
   }
+  
 
   async countAllBlocks(): Promise<number> {
     const query = `SELECT COUNT(*) FROM blocks`;
