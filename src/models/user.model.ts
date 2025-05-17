@@ -71,8 +71,22 @@ export class UserModel {
   const query = `SELECT is_disabled FROM users WHERE id = $1`;
   const result = await pool.query(query, [id]);
   return result.rows[0]?.is_disabled ?? false;
-}
+  }
 
+  async isUserBlocked(id: string): Promise<boolean> {
+    const query = `SELECT * FROM blocks WHERE user_id = $1`;
+    const result = await pool.query(query, [id]); // ← this is the important fix
+  
+    const isBlocked = result.rowCount! > 0;
+  
+    if (isBlocked) {
+      const disableQuery = `UPDATE users SET is_disabled = true WHERE id = $1`;
+      await pool.query(disableQuery, [id]);
+    }
+  
+    return isBlocked;
+  }
+    
 
   async enableUser(id: string): Promise<void> {
     const query = `UPDATE users SET is_disabled = false WHERE id = $1`;
