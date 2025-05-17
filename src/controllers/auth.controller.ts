@@ -87,6 +87,18 @@ export const enableUser = async (req: Request, res: Response) => {
   }
 }
 
+export const disableUserBlock = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const userModel = new UserModel();
+    const disable = await userModel.isUserBlocked(id);
+    res.status(200).json({ message: "User block disable successfully", disable });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
 export const deleteUsers = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;

@@ -45,7 +45,7 @@ export const blockIfDisabled = async (req: Request, res: Response, next: NextFun
     res.status(401).json({ message: "Unauthorized: No user found in token" });
     return;
   }
-
+  await userModel.isUserBlocked(userId);
   const isDisabled = await userModel.isUserDisabled(userId);
   if (isDisabled) {
     res.status(403).json({ message: "Access denied. Your account is disabled." });
