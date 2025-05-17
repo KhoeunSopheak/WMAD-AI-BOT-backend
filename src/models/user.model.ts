@@ -62,6 +62,28 @@ export class UserModel {
     return parseInt(result.rows[0].count, 10);
   }
 
+  async disableUser(id: string): Promise<void> {
+    const query = `UPDATE users SET is_disabled = true WHERE id = $1`;
+    await pool.query(query, [id]);
+  }
+
+  async isUserDisabled(id: string): Promise<boolean> {
+  const query = `SELECT is_disabled FROM users WHERE id = $1`;
+  const result = await pool.query(query, [id]);
+  return result.rows[0]?.is_disabled ?? false;
+}
+
+
+  async enableUser(id: string): Promise<void> {
+    const query = `UPDATE users SET is_disabled = false WHERE id = $1`;
+    await pool.query(query, [id]);
+  }
+
+  async deleteUser(id: string): Promise<void> {
+    const query = `DELETE FROM users WHERE id = $1`;
+    await pool.query(query, [id]);
+  }
+
   async validateLogin(email: string, password: string): Promise<{ isValid: boolean, user?: User }> {
     const user = await this.findByEmail(email);
 

@@ -62,6 +62,44 @@ export const totalAllUsers = async (req: Request, res: Response) => {
   }
 }
 
+export const disableUser = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const userModel = new UserModel();
+    const disable = await userModel.disableUser(id);
+    res.status(200).json({ message: "User disable successfully", disable });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+export const enableUser = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const userModel = new UserModel();
+    const enable = await userModel.enableUser(id);
+
+    res.status(200).json({ message: "Enable user successfully", enable });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+export const deleteUsers = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const userModel = new UserModel();
+    const disable = await userModel.deleteUser(id);
+
+    res.status(200).json({ message: "Delete user successfully", disable });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
 export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
   const userModel = new UserModel();
