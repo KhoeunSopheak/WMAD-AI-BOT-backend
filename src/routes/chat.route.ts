@@ -1,8 +1,9 @@
 import { Router } from "express";
 import protectRoute from "../midleware/auth.midleware";
 import { RoleEnum } from "../common";
-import { askQuery, deleteChat, getAllChats, getChatById, getChatByUserId, updateChat } from "../controllers/chat.controller";
+import { deleteChat, getAllChats, getChatById, getChatByUserId, updateChat } from "../controllers/chat.controller";
 import { blockIfDisabled } from "../midleware/auth.midleware";
+import { askQuery } from "../service/serviceChat/saveChat";
 
 const router = Router();
 
