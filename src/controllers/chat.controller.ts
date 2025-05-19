@@ -175,4 +175,52 @@ export const deleteChat = async (req: Request, res: Response) => {
 
 }
 
+export const updateChat = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { user_message } = req.body;
+  const updated_at = new Date();
+
+  if (!user_message) {
+    res.status(400).json({ message: "user_message is required to update the chat." });
+    return;
+  }
+
+  try {
+    const chatModel = new ChatModel();
+    const existingChat = await chatModel.findChatById(id);
+
+    if (!existingChat) {
+      res.status(404).json({ message: "Chat not found." });
+      return;
+    }
+
+    // Compose the new prompt for AI
+    const newPrompt = `${existingChat.user_message}\nUser: ${user_message}`;
+
+    const response = await ollamaNoStream([{ role: 'user', content: newPrompt }]);
+    const newAiResponse = response.message.content;
+
+    // Create new ChatModel instance with updated chat history
+    const updatedChat = new ChatModel({
+      ...existingChat,
+      user_message: `${existingChat.user_message}\n${user_message}`,
+      ai_response: `${existingChat.ai_response}\n${newAiResponse}`,
+      updated_at,
+    });
+
+    await updatedChat.updateChat();
+
+    res.status(200).json({
+      message: "Chat updated successfully.",
+      new_ai_response: newAiResponse,
+    });
+    return;
+  } catch (error) {
+    console.error("Error updating chat:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+    return;
+  }
+};
+
+
 
