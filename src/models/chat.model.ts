@@ -24,7 +24,7 @@ export class ChatModel {
 
     const query = `
       INSERT INTO chats (id, user_message, user_id, ai_response, category, created_at, updated_at)
-      VALUES ($1, $2, $3, $4, $5, $6)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
       RETURNING *;
     `;
 
@@ -41,18 +41,59 @@ export class ChatModel {
     await pool.query(query, values);
   }
 
+  async updateChat(): Promise<void> {
+    if (!this.chat) {
+      throw new Error("Chat data is required to update a chat.");
+    }
+
+    // Step 1: Get existing chat data
+    const existingChat = await this.findChatById(this.chat.id);
+
+    if (!existingChat) {
+      throw new Error(`Chat with ID ${this.chat.id} does not exist.`);
+    }
+
+    // Step 2: Append new content to existing values
+    const updatedUserMessage = `${existingChat.user_message}\n${this.chat.user_message}`;
+    const updatedAiResponse = `${existingChat.ai_response}\n${this.chat.ai_response}`;
+    const updatedCategory = this.chat.category || existingChat.category;
+
+    const updatedAt = new Date(); // Update timestamp
+
+    // Step 3: Update the database
+    const query = `
+    UPDATE chats
+    SET user_message = $1,
+        ai_response = $2,
+        category = $3,
+        updated_at = $4
+    WHERE id = $5
+  `;
+
+    const values = [
+      updatedUserMessage,
+      updatedAiResponse,
+      updatedCategory,
+      updatedAt,
+      this.chat.id,
+    ];
+
+    await pool.query(query, values);
+  }
+
+
   async findAllChats(): Promise<Chat[]> {
-      const query = `SELECT * FROM chats ORDER BY created_at DESC`;
-      const result = await pool.query(query);
-      return result.rows;
-    }
-  
-    async findChatById(id: string): Promise<Chat | null> {
-      const query = `SELECT * FROM chats WHERE id = $1`;
-      const result = await pool.query(query, [id]);
-      const rows = result.rows;
-      return rows.length > 0 ? rows[0] : null;
-    }
+    const query = `SELECT * FROM chats ORDER BY created_at DESC`;
+    const result = await pool.query(query);
+    return result.rows;
+  }
+
+  async findChatById(id: string): Promise<Chat | null> {
+    const query = `SELECT * FROM chats WHERE id = $1`;
+    const result = await pool.query(query, [id]);
+    const rows = result.rows;
+    return rows.length > 0 ? rows[0] : null;
+  }
 
   async findChatsByUser(user_id: string): Promise<Chat[]> {
     const query = `
@@ -69,5 +110,4 @@ export class ChatModel {
     const query = `DELETE FROM chats WHERE id = $1`;
     await pool.query(query, [id]);
   }
-
 }
