@@ -1,7 +1,7 @@
 import { Router } from "express";
 import protectRoute from "../midleware/auth.midleware";
 import { RoleEnum } from "../common";
-import { askQuery } from "../controllers/chat.controller";
+import { askQuery } from "../service/serviceChat/saveChat";
 import { deleteBlock, getAllBlocks, getBlockById, getBlockByUserId, totalAllBlocks } from "../controllers/block.controller";
 
 const router = Router();
