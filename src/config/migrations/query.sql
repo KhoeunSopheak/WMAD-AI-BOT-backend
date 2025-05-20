@@ -50,6 +50,10 @@ CREATE TABLE chats (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_chat_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+ALTER TABLE chats
+  ALTER COLUMN user_message SET DATA TYPE TEXT[] USING string_to_array(user_message, E'\n'),
+  ALTER COLUMN ai_response SET DATA TYPE TEXT[] USING string_to_array(ai_response, E'\n');
+
 
 ALTER TABLE chats ADD COLUMN category VARCHAR(255);
 
