@@ -50,6 +50,25 @@ export const getAllUsers = async (_req: Request, res: Response) => {
   }
 };
 
+export const getUserById = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const userModel = new UserModel();
+    const user = await userModel.findById(id);
+
+    if (!user) {
+     res.status(404).json({ message: "User not found" });
+     return;
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 export const totalAllUsers = async (req: Request, res: Response) => {
   try {
     const userModel = new UserModel();

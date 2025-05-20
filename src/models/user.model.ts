@@ -105,4 +105,11 @@ export class UserModel {
     const isPasswordValid = await comparePassword(user.password, password);
     return { isValid: isPasswordValid, user: isPasswordValid ? user : undefined };
   }
+
+  async findById(id: string): Promise<User | null> {
+      const query = `SELECT * FROM users WHERE id = $1`;
+      const result = await pool.query(query, [id]);
+      const rows = result.rows;
+      return rows.length > 0 ? rows[0] : null;
+    }
 }
