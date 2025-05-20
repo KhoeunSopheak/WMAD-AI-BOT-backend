@@ -2,14 +2,13 @@ import { Request, Response } from "express";
 import { ollamaNoStream } from "../service/ollamaChat";
 import { ChatModel } from "../models/chat.model";
 
-
 export const getChatByUserId = async (req: Request, res: Response) => {
   const { user_id } = req.params;
   try {
     const chatModel = new ChatModel();
     const chat = await chatModel.findChatsByUser(user_id);
 
-    if (!chat) {
+    if (!chat || chat.length === 0) {
       res.status(404).json({ message: "Chats not found." });
       return;
     }
@@ -19,9 +18,9 @@ export const getChatByUserId = async (req: Request, res: Response) => {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
   }
-}
+};
 
-export const getAllChats = async (req: Request, res: Response) => {
+export const getAllChats = async (_req: Request, res: Response) => {
   try {
     const chatModel = new ChatModel();
     const chat = await chatModel.findAllChats();
@@ -31,8 +30,7 @@ export const getAllChats = async (req: Request, res: Response) => {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
   }
-
-}
+};
 
 export const getChatById = async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -40,27 +38,30 @@ export const getChatById = async (req: Request, res: Response) => {
     const chatModel = new ChatModel();
     const chat = await chatModel.findChatById(id);
 
+    if (!chat) {
+      res.status(404).json({ message: "Chat not found." });
+      return;
+    }
+
     res.status(200).json({ message: "Get chat successfully", chat });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
   }
-
-}
+};
 
 export const deleteChat = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
     const chatModel = new ChatModel();
-    const chat = await chatModel.deleteChat(id);
+    await chatModel.deleteChat(id);
 
-    res.status(200).json({ message: "Deleted chat successfully", chat });
+    res.status(200).json({ message: "Deleted chat successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
   }
-
-}
+};
 
 export const updateChat = async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -81,17 +82,21 @@ export const updateChat = async (req: Request, res: Response) => {
       return;
     }
 
-    // Compose the new prompt for AI
-    const newPrompt = `${existingChat.user_message}\nUser: ${user_message}`;
+    // Join previous conversation as prompt
+    const historyPrompt = existingChat.user_message
+      .map((msg, i) => `User: ${msg}\nAI: ${existingChat.ai_response[i] || ""}`)
+      .join("\n");
 
-    const response = await ollamaNoStream([{ role: 'user', content: newPrompt }]);
+    const newPrompt = `${historyPrompt}\nUser: ${user_message}`;
+
+    const response = await ollamaNoStream([{ role: "user", content: newPrompt }]);
     const newAiResponse = response.message.content;
 
-    // Create new ChatModel instance with updated chat history
+    // Create updated chat model
     const updatedChat = new ChatModel({
       ...existingChat,
-      user_message: `${existingChat.user_message}\n${user_message}`,
-      ai_response: `${existingChat.ai_response}\n${newAiResponse}`,
+      user_message: [...existingChat.user_message, user_message],
+      ai_response: [...existingChat.ai_response, newAiResponse],
       updated_at,
     });
 
@@ -101,13 +106,8 @@ export const updateChat = async (req: Request, res: Response) => {
       message: "Chat updated successfully.",
       new_ai_response: newAiResponse,
     });
-    return;
   } catch (error) {
     console.error("Error updating chat:", error);
     res.status(500).json({ message: "Internal Server Error" });
-    return;
   }
 };
-
-
-

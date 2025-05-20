@@ -2,9 +2,9 @@ import { pool } from "../config/db";
 
 export interface Chat {
   id: string;
-  user_message: string;
+  user_message: string[]; // now an array
   user_id: string;
-  ai_response: string;
+  ai_response: string[];  // now an array
   category: string;
   created_at: Date;
   updated_at: Date;
@@ -30,9 +30,9 @@ export class ChatModel {
 
     const values = [
       this.chat.id,
-      this.chat.user_message,
+      this.chat.user_message,  // array
       this.chat.user_id,
-      this.chat.ai_response,
+      this.chat.ai_response,   // array
       this.chat.category,
       this.chat.created_at,
       this.chat.updated_at,
@@ -46,29 +46,24 @@ export class ChatModel {
       throw new Error("Chat data is required to update a chat.");
     }
 
-    // Step 1: Get existing chat data
     const existingChat = await this.findChatById(this.chat.id);
-
     if (!existingChat) {
       throw new Error(`Chat with ID ${this.chat.id} does not exist.`);
     }
 
-    // Step 2: Append new content to existing values
-    const updatedUserMessage = `${existingChat.user_message}\n${this.chat.user_message}`;
-    const updatedAiResponse = `${existingChat.ai_response}\n${this.chat.ai_response}`;
+    const updatedUserMessage = [...existingChat.user_message, ...this.chat.user_message];
+    const updatedAiResponse = [...existingChat.ai_response, ...this.chat.ai_response];
     const updatedCategory = this.chat.category || existingChat.category;
+    const updatedAt = new Date();
 
-    const updatedAt = new Date(); // Update timestamp
-
-    // Step 3: Update the database
     const query = `
-    UPDATE chats
-    SET user_message = $1,
-        ai_response = $2,
-        category = $3,
-        updated_at = $4
-    WHERE id = $5
-  `;
+      UPDATE chats
+      SET user_message = $1,
+          ai_response = $2,
+          category = $3,
+          updated_at = $4
+      WHERE id = $5
+    `;
 
     const values = [
       updatedUserMessage,
@@ -80,7 +75,6 @@ export class ChatModel {
 
     await pool.query(query, values);
   }
-
 
   async findAllChats(): Promise<Chat[]> {
     const query = `SELECT * FROM chats ORDER BY created_at DESC`;
