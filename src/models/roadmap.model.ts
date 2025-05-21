@@ -101,4 +101,9 @@ export class RoadmapModel {
             milestone: JSON.parse(row.milestone),
         }));
     }
+
+    async deleteRoadmap(id: string): Promise<void> {
+        const query = `DELETE FROM roadmaps WHERE id = $1`;
+        await pool.query(query, [id]);
+      }
 }

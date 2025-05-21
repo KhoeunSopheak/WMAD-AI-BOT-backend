@@ -134,3 +134,16 @@ export const getRoadmapByUserId = async (req: Request, res: Response) => {
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
+
+export const deleteRoadmap = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+      const roadmapModel = new RoadmapModel();
+      const roadmaps = await roadmapModel.deleteRoadmap(id);
+  
+      res.status(200).json({message: "Deleted roadmap successfully", roadmaps});
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  }

@@ -44,8 +44,8 @@ export const ollamaStream = async (
     const chatModel = new ChatModel({
       id,
       user_id: meta.user_id,
-      user_message: meta.user_message,
-      ai_response: fullResponse,
+      user_message: [meta.user_message],
+      ai_response: [fullResponse],
       category: meta.category,
       created_at,
       updated_at,
