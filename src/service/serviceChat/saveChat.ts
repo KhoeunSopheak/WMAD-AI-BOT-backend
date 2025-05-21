@@ -82,7 +82,7 @@ export const askQuery = async (req: Request, res: Response) => {
         id,
         user_message,
         user_id,
-        ai_response: response.message.content,
+        ai_response: [response.message.content],
         category: selectedCategory,
         created_at,
         updated_at,
