@@ -27,15 +27,13 @@ app.use(limiter)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })) // for form data
 var corsOptions = {
-  origin: "*", // your frontend URL
+  origin: "http://localhost:3002", // your frontend URL
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   credentials: true, // if you use cookies, auth, etc.
 };
 
 app.use(cors(corsOptions));
 
-
-app.use(cors(corsOptions));
 
 
 // Routes
