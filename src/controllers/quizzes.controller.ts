@@ -127,15 +127,15 @@ export const getQuizByUserId = async (req: Request, res: Response) => {
     const { user_id } = req.params;
 
     try {
-        const roadmapModel = new QuizModel();
-        const roadmaps = await roadmapModel.findByUserId(user_id);
+        const quizModel = new QuizModel();
+        const quiz = await quizModel.findByUserId(user_id);
 
-        if (!roadmaps || roadmaps.length === 0) {
+        if (!quiz || quiz.length === 0) {
             res.status(404).json({ message: "Quiz not found." });
             return;
         }
 
-        res.status(200).json({ message: "Get Quiz by user successfully", roadmaps });
+        res.status(200).json({ message: "Get Quiz by user successfully", quiz });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal Server Error" });
