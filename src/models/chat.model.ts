@@ -30,23 +30,34 @@ export class ChatModel {
       throw new Error("Chat data is required to create a chat.");
     }
 
+    // Ensure only last 5 messages are saved
+    const trimmedUserMessages = this.chat.user_message.slice(-5);
+    const trimmedAiResponses = this.chat.ai_response.slice(-5);
+
     const query = `
-      INSERT INTO chats (id, user_message, user_id, ai_response, category, created_at, updated_at)
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
-    `;
+    INSERT INTO chats (id, user_message, user_id, ai_response, category, created_at, updated_at)
+    VALUES ($1, $2, $3, $4, $5, $6, $7)
+    RETURNING *;
+  `;
 
     const values = [
       this.chat.id,
-      this.chat.user_message,
+      trimmedUserMessages,
       this.chat.user_id,
-      this.chat.ai_response,
+      trimmedAiResponses,
       this.chat.category,
       this.chat.created_at,
       this.chat.updated_at,
     ];
 
-    await pool.query(query, values);
+    try {
+      await pool.query(query, values);
+    } catch (error) {
+      console.error("Failed to insert chat:", error);
+      throw new Error("Database insert failed.");
+    }
   }
+
 
   async updateChat(): Promise<void> {
     if (!this.chat) {
@@ -87,6 +98,59 @@ export class ChatModel {
       throw new Error('Database update failed.');
     }
   }
+
+  // async updateChat(): Promise<void> {
+  //   if (!this.chat) {
+  //     throw new Error("Chat data is required to update a chat.");
+  //   }
+
+  //   const existingChat = await this.findChatById(this.chat.id);
+  //   if (!existingChat) {
+  //     throw new Error(`Chat with ID ${this.chat.id} does not exist.`);
+  //   }
+
+  //   // Append new messages
+  //   // const updatedUserMessages = [
+  //   //   ...(existingChat.user_message || []),
+  //   //   ...(this.chat.user_message || []),
+  //   // ];
+  //   // const updatedAiResponses = [
+  //   //   ...(existingChat.ai_response || []),
+  //   //   ...(this.chat.ai_response || []),
+  //   // ];
+
+  //   // Trim to keep only the last 5
+  //   const trimmedUserMessages = this.chat.user_message.slice(-2);
+  //   const trimmedAiResponses = this.chat.ai_response.slice(-2);
+
+  //   const updatedCategory = this.chat.category || existingChat.category;
+  //   const updatedAt = new Date();
+
+  //   const query = `
+  //   UPDATE chats
+  //   SET user_message = $1,
+  //       ai_response = $2,
+  //       category = $3,
+  //       updated_at = $4
+  //   WHERE id = $5
+  // `;
+
+  //   const values = [
+  //     trimmedUserMessages,
+  //     trimmedAiResponses,
+  //     updatedCategory,
+  //     updatedAt,
+  //     this.chat.id,
+  //   ];
+
+  //   try {
+  //     await pool.query(query, values);
+  //   } catch (error) {
+  //     console.error("Failed to update chat:", error);
+  //     throw new Error("Database update failed.");
+  //   }
+  // }
+
 
   async findAllChats(): Promise<Chat[]> {
     const query = `SELECT * FROM chats ORDER BY created_at DESC`;
