@@ -34,10 +34,6 @@ var corsOptions = {
 
 app.use(cors(corsOptions));
 
-
-app.use(cors(corsOptions));
-
-
 // Routes
 app.use("/api/auth", authRouter);
 app.use("/api/users/students", studentRoute);
