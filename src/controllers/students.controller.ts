@@ -104,3 +104,66 @@ export const deleteStudent = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+// export const updateChat = async (req: Request, res: Response) => {
+//   const { id } = req.params;
+//   const { user_message } = req.body;
+//   const updated_at = new Date();
+
+//   if (!user_message) {
+//     res.status(400).json({ message: "user_message is required to update the chat." });
+//      return;
+//   }
+
+//   try {
+//     const chatModel = new ChatModel();
+//     const existingChat = await chatModel.findChatById(id);
+
+//     if (!existingChat) {
+//       res.status(404).json({ message: "Chat not found." });
+//        return;
+//     }
+
+//     // Join previous conversation
+//     const historyPrompt = existingChat.user_message
+//       .map((msg, i) => `User: ${msg}\nAI: ${existingChat.ai_response[i] || ""}`)
+//       .join("\n");
+
+//     const newPrompt = `${historyPrompt}\nUser: ${user_message}`;
+
+//     let fullResponse = "";
+
+//     // Stream the response
+//     await ollamaStream(
+//       [{ role: "user", content: newPrompt }],
+//       res,
+//       {
+//         user_id: existingChat.user_id,
+//         user_message,
+//         category: existingChat.category,
+//         onChunk: (chunk: string) => {
+//           fullResponse += chunk;
+//         },
+//         onEnd: async () => {
+//           try {
+//             const updatedChat = new ChatModel({
+//               ...existingChat,
+//               user_message: [...existingChat.user_message, user_message],
+//               ai_response: [...existingChat.ai_response, fullResponse],
+//               updated_at,
+//             });
+
+//             await updatedChat.updateChat();
+//           } catch (err) {
+//             console.error("Error saving chat after stream:", err);
+//           }
+//         },
+//       }
+//     );
+//   } catch (error) {
+//     console.error("Error updating chat:", error);
+//     if (!res.headersSent) {
+//       res.status(500).json({ message: "Internal Server Error" });
+//     }
+//   }
+// };

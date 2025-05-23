@@ -2,10 +2,18 @@ import { pool } from "../config/db";
 
 export interface Chat {
   id: string;
-  user_message: string[]; // now an array
+  user_message: string[];
   user_id: string;
-  ai_response: string[];  // now an array
+  ai_response: string[];
   category: string;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface ChatSummary {
+  id: string;
+  user_message: string[];
+  user_id: string;
   created_at: Date;
   updated_at: Date;
 }
@@ -25,14 +33,13 @@ export class ChatModel {
     const query = `
       INSERT INTO chats (id, user_message, user_id, ai_response, category, created_at, updated_at)
       VALUES ($1, $2, $3, $4, $5, $6, $7)
-      RETURNING *;
     `;
 
     const values = [
       this.chat.id,
-      this.chat.user_message,  // array
+      this.chat.user_message,
       this.chat.user_id,
-      this.chat.ai_response,   // array
+      this.chat.ai_response,
       this.chat.category,
       this.chat.created_at,
       this.chat.updated_at,
@@ -51,8 +58,8 @@ export class ChatModel {
       throw new Error(`Chat with ID ${this.chat.id} does not exist.`);
     }
 
-    const updatedUserMessage = [...existingChat.user_message, ...this.chat.user_message];
-    const updatedAiResponse = [...existingChat.ai_response, ...this.chat.ai_response];
+    // const updatedUserMessage = [...(existingChat.user_message || []), ...this.chat.user_message];
+    // const updatedAiResponse = [...(existingChat.ai_response || []), ...this.chat.ai_response];
     const updatedCategory = this.chat.category || existingChat.category;
     const updatedAt = new Date();
 
@@ -66,14 +73,19 @@ export class ChatModel {
     `;
 
     const values = [
-      updatedUserMessage,
-      updatedAiResponse,
+      this.chat.user_message,
+      this.chat.ai_response,
       updatedCategory,
       updatedAt,
       this.chat.id,
     ];
 
-    await pool.query(query, values);
+    try {
+      await pool.query(query, values);
+    } catch (error) {
+      console.error('Failed to update chat:', error);
+      throw new Error('Database update failed.');
+    }
   }
 
   async findAllChats(): Promise<Chat[]> {
@@ -84,24 +96,52 @@ export class ChatModel {
 
   async findChatById(id: string): Promise<Chat | null> {
     const query = `SELECT * FROM chats WHERE id = $1`;
-    const result = await pool.query(query, [id]);
-    const rows = result.rows;
-    return rows.length > 0 ? rows[0] : null;
+
+    try {
+      const result = await pool.query(query, [id]);
+      return result.rows[0] ?? null;
+    } catch (error) {
+      console.error("Error fetching chat by ID:", error);
+      throw new Error("Database query failed.");
+    }
   }
 
-  async findChatsByUser(user_id: string): Promise<Chat[]> {
+  async findChatsByUser(user_id: string): Promise<ChatSummary[]> {
     const query = `
-      SELECT * FROM chats
+      SELECT id, user_message, user_id, created_at, updated_at
+      FROM chats
       WHERE user_id = $1
       ORDER BY created_at ASC;
     `;
 
-    const result = await pool.query(query, [user_id]);
-    return result.rows as Chat[];
+    try {
+      const result = await pool.query<ChatSummary>(query, [user_id]);
+      return result.rows;
+    } catch (error) {
+      console.error("Error fetching chats by user:", error);
+      throw new Error("Database query failed.");
+    }
   }
 
   async deleteChat(id: string): Promise<void> {
     const query = `DELETE FROM chats WHERE id = $1`;
     await pool.query(query, [id]);
+  }
+
+  async findLastChatByUserAndCategory(user_id: string, category: string): Promise<Chat | null> {
+    const query = `
+      SELECT * FROM chats
+      WHERE user_id = $1 AND category = $2
+      ORDER BY created_at DESC
+      LIMIT 1;
+    `;
+
+    try {
+      const result = await pool.query<Chat>(query, [user_id, category]);
+      return result.rows[0] ?? null;
+    } catch (error) {
+      console.error("Error fetching chat by user and category:", error);
+      throw new Error("Database query failed.");
+    }
   }
 }
