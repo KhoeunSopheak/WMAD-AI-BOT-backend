@@ -62,6 +62,7 @@ export const ollamaStream = async (
     //   updated_at,
     // });
 
+
     // if (meta?.newChat) {
     //   await chatModel.startChat();
     // } else {

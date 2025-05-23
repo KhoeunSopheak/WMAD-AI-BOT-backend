@@ -72,12 +72,17 @@ export class QuizModel {
     };
   }
 
-  async findByUserId(userId: string): Promise<Quiz[]> {
+  async findByUserId(user_id: string): Promise<Quiz[]> {
     const query = `SELECT * FROM quizzes WHERE user_id = $1 ORDER BY created_at DESC`;
-    const result = await pool.query(query, [userId]);
+    const result = await pool.query(query, [user_id]);
     return result.rows.map((row: any) => ({
       ...row,
       options:row.options,
     }));
+  }
+
+  async deleteQuiz(id: string): Promise<void> {
+    const query = `DELETE FROM quizzes WHERE id = $1`;
+    await pool.query(query, [id]);
   }
 }

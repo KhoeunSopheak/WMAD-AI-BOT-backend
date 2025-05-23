@@ -95,10 +95,25 @@ export class RoadmapModel {
     async findByUserId(user_id: string): Promise<Roadmap[]> {
         const query = `SELECT * FROM roadmaps WHERE user_id = $1`;
         const { rows } = await pool.query(query, [user_id]);
-
-        return rows.map(row => ({
+      
+        return rows.map(row => {
+          let milestoneArray = [];
+          try {
+            milestoneArray = typeof row.milestone === "string" ? JSON.parse(row.milestone) : [];
+          } catch (err) {
+            console.warn("JSON parse error for milestone:", row.milestone);
+          }
+      
+          return {
             ...row,
-            milestone: JSON.parse(row.milestone),
-        }));
-    }
+            milestone: milestoneArray,
+          };
+        });
+      }
+      
+
+    async deleteRoadmap(id: string): Promise<void> {
+        const query = `DELETE FROM roadmaps WHERE id = $1`;
+        await pool.query(query, [id]);
+      }
 }
