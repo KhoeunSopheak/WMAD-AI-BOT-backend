@@ -68,25 +68,25 @@ export class UserModel {
   }
 
   async isUserDisabled(id: string): Promise<boolean> {
-  const query = `SELECT is_disabled FROM users WHERE id = $1`;
-  const result = await pool.query(query, [id]);
-  return result.rows[0]?.is_disabled ?? false;
+    const query = `SELECT is_disabled FROM users WHERE id = $1`;
+    const result = await pool.query(query, [id]);
+    return result.rows[0]?.is_disabled ?? false;
   }
 
   async isUserBlocked(id: string): Promise<boolean> {
     const query = `SELECT * FROM blocks WHERE user_id = $1`;
     const result = await pool.query(query, [id]); // ← this is the important fix
-  
+
     const isBlocked = result.rowCount! > 0;
-  
+
     if (isBlocked) {
       const disableQuery = `UPDATE users SET is_disabled = true WHERE id = $1`;
       await pool.query(disableQuery, [id]);
     }
-  
+
     return isBlocked;
   }
-    
+
 
   async enableUser(id: string): Promise<void> {
     const query = `UPDATE users SET is_disabled = false WHERE id = $1`;
@@ -107,9 +107,35 @@ export class UserModel {
   }
 
   async findById(id: string): Promise<User | null> {
-      const query = `SELECT * FROM users WHERE id = $1`;
-      const result = await pool.query(query, [id]);
-      const rows = result.rows;
-      return rows.length > 0 ? rows[0] : null;
-    }
+    const query = `SELECT * FROM users WHERE id = $1`;
+    const result = await pool.query(query, [id]);
+    const rows = result.rows;
+    return rows.length > 0 ? rows[0] : null;
+  }
+
+  async getUsersGroupedByDate(start: string, end: string): Promise<
+    { date: string; totalUsers: number; blockedUsers: number }[]
+  > {
+    const query = `
+  SELECT
+    TO_CHAR(DATE(u.created_at), 'YYYY-MM-DD') AS date,
+    COUNT(*) AS "totalUsers",
+    COUNT(b.user_id) AS "blockedUsers"
+  FROM users u
+  LEFT JOIN blocks b ON u.id = b.user_id
+  WHERE u.created_at BETWEEN $1 AND $2
+  GROUP BY DATE(u.created_at)
+  ORDER BY date ASC;
+`;
+
+    const result = await pool.query(query, [start, end]);
+
+    // Convert counts from string to number
+    return result.rows.map((row) => ({
+      date: row.date,
+      totalUsers: Number(row.totalUsers),
+      blockedUsers: Number(row.blockedUsers),
+    }));
+  }
+
 }

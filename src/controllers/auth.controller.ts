@@ -157,6 +157,25 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
+export const getUsersGroupedByDate = async (req: Request, res: Response) => {
+  try {
+    const { start, end } = req.query;
+
+    if (!start || !end) {
+      res.status(400).json({ message: "Start and end dates are required" });
+      return;
+    }
+
+    const userModel = new UserModel();
+    const data = await userModel.getUsersGroupedByDate(start as string, end as string);
+
+    res.status(200).json({ message: "Get users grouped by date successfully", data });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 
 
 
