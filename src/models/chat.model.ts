@@ -71,6 +71,7 @@ export class ChatModel {
 
     // const updatedUserMessage = [...(existingChat.user_message || []), ...this.chat.user_message];
     // const updatedAiResponse = [...(existingChat.ai_response || []), ...this.chat.ai_response];
+    
     const updatedCategory = this.chat.category || existingChat.category;
     const updatedAt = new Date();
 
