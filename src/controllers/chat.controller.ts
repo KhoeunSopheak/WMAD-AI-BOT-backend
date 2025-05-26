@@ -77,10 +77,91 @@ export const deleteChat = async (req: Request, res: Response) => {
   }
 };
 
+// export const updateChat = async (req: Request, res: Response) => {
+//   const { id } = req.params;
+//   const { user_message } = req.body;
+//   const uesrId = req.user?.id;
+
+//   if (!user_message) {
+//     res.status(400).json({ message: "user_message is required to update the chat." });
+//     return;
+//   }
+
+//   try {
+//     const chatModel = new ChatModel();
+//     const existingChat = await chatModel.findChatById(id);
+
+//     if (!existingChat) {
+//       res.status(404).json({ message: "Chat not found." });
+//       return;
+//     }
+
+//     const historyPrompt = existingChat.user_message
+//       .map((msg, i) => `User: ${msg}\nAI: ${existingChat.ai_response[i] || ""}`)
+//       .join("\n");
+
+//     const newPrompt = `${historyPrompt}\nUser: ${user_message}`;
+//     let fullResponse = "";
+
+//     await ollamaStream(
+//       [{ role: "user", content: newPrompt }],
+//       res,
+//       {
+//         user_id: existingChat.user_id,
+//         user_message,
+//         category: existingChat.category,
+//         onChunk: (chunk: string) => {
+//           fullResponse += chunk;
+//         },
+//         onEnd: async (chat_id) => {
+//           try {
+//             // Append and trim to last 5 messages
+//             const updatedUserMessages = [
+//               ...(existingChat.user_message || []),
+//               user_message,
+//             ];
+
+//             const updatedAiResponses = [
+//               ...(existingChat.ai_response || []),
+//               fullResponse,
+//             ];
+
+//             const updatedChat = new ChatModel({
+//               ...existingChat,
+//               user_message: updatedUserMessages,
+//               ai_response: updatedAiResponses,
+//               updated_at: new Date(),
+//             });
+
+//             await updatedChat.updateChat();
+
+//             if (res && !res.headersSent && !res.writableEnded) {
+//               res.write(`\ndata: ${JSON.stringify({
+//                 message: "Chat updated successfully.",
+//                 new_ai_response: fullResponse,
+//               })}\n\n`);
+//               res.end();
+//             }
+//           } catch (err) {
+//             console.error("Error saving chat after stream:", err);
+//             if (res && !res.headersSent) {
+//               res.status(500).json({ message: "Failed to save chat update." });
+//             }
+//           }
+//         },
+//       }
+//     );
+//   } catch (error) {
+//     console.error("Error updating chat:", error);
+//     if (!res.headersSent) {
+//       res.status(500).json({ message: "Internal Server Error" });
+//     }
+//   }
+// };
+
 export const updateChat = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { user_message } = req.body;
-  const uesrId = req.user?.id;
 
   if (!user_message) {
     res.status(400).json({ message: "user_message is required to update the chat." });
@@ -96,13 +177,20 @@ export const updateChat = async (req: Request, res: Response) => {
       return;
     }
 
-    const historyPrompt = existingChat.user_message
-      .map((msg, i) => `User: ${msg}\nAI: ${existingChat.ai_response[i] || ""}`)
+    // Step 1: Get last 5 messages
+    const lastUserMessages = (existingChat.user_message || []).slice(-5);
+    const lastAiResponses = (existingChat.ai_response || []).slice(-5);
+
+    // Step 2: Build newPrompt from last 5 + new user input
+    const historyPrompt = lastUserMessages
+      .map((msg, i) => `User: ${msg}\nAI: ${lastAiResponses[i] || ""}`)
       .join("\n");
 
     const newPrompt = `${historyPrompt}\nUser: ${user_message}`;
+
     let fullResponse = "";
 
+    // Step 3: Stream AI response
     await ollamaStream(
       [{ role: "user", content: newPrompt }],
       res,
@@ -113,42 +201,24 @@ export const updateChat = async (req: Request, res: Response) => {
         onChunk: (chunk: string) => {
           fullResponse += chunk;
         },
-        onEnd: async (chat_id) => {
+        onEnd: async () => {
           try {
-            // Append and trim to last 5 messages
-            const updatedUserMessages = [
-              ...(existingChat.user_message || []),
-              user_message,
-            ].slice(-1);
-
-            const updatedAiResponses = [
-              ...(existingChat.ai_response || []),
-              fullResponse,
-            ].slice(-1);
-
+            // Step 4: Append new message and response to DB
             const updatedChat = new ChatModel({
               ...existingChat,
-              user_message: updatedUserMessages,
-              ai_response: updatedAiResponses,
+              user_message: [...(existingChat.user_message || []), user_message],
+              ai_response: [...(existingChat.ai_response || []), fullResponse],
               updated_at: new Date(),
             });
 
             await updatedChat.updateChat();
-
-            if (res && !res.headersSent && !res.writableEnded) {
-              res.write(`\ndata: ${JSON.stringify({
-                message: "Chat updated successfully.",
-                new_ai_response: fullResponse,
-              })}\n\n`);
-              res.end();
-            }
           } catch (err) {
             console.error("Error saving chat after stream:", err);
             if (res && !res.headersSent) {
               res.status(500).json({ message: "Failed to save chat update." });
             }
           }
-        },
+        }
       }
     );
   } catch (error) {
@@ -158,6 +228,7 @@ export const updateChat = async (req: Request, res: Response) => {
     }
   }
 };
+
 
 
 
