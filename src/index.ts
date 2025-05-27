@@ -1,15 +1,15 @@
 import express from 'express';
-import authRouter from "./src/routes/auth.route";
-import studentRoute from './src/routes/students.route';
-import quizzRoute from './src/routes/quizzes.route';
-import chatRoute from './src/routes/chat.route';
-import blockRoute from './src/routes/block.route';
-import roadmapRoute from './src/routes/roadmap.route';
+import authRouter from "./routes/auth.route";
+import studentRoute from './routes/students.route';
+import quizzRoute from './routes/quizzes.route';
+import chatRoute from './routes/chat.route';
+import blockRoute from './routes/block.route';
+import roadmapRoute from './routes/roadmap.route';
 import cors from "cors";
 import { rateLimit } from 'express-rate-limit'
 
 const app = express();
-const PORT = 3003;
+const PORT = process.env.PORT || 3000;
 
 
 const limiter = rateLimit({

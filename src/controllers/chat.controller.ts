@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { ollamaNoStream, ollamaStream } from "../service/ollamaChat";
 import { ChatModel } from "../models/chat.model";
 import { v4 as uuidv4 } from "uuid";
-import { Filter } from "bad-words";
 import { BlockModel } from "../models/block.model";
 
 export const getChatByUserId = async (req: Request, res: Response) => {
@@ -254,7 +253,9 @@ export const generateAi = async (req: Request, res: Response) => {
   };
   const prompt = (promptMap[selectedCategory] || `You are a helpful assistant. Please answer: `) + user_message;
 
+  const Filter = require('bad-words');
   const filter = new Filter();
+
   if (filter.isProfane(user_message)) {
     const blocksModel = new BlockModel({
       id: uuidv4(),
@@ -263,7 +264,9 @@ export const generateAi = async (req: Request, res: Response) => {
       created_at,
       updated_at,
     });
+
     await blocksModel.blockUser();
+
     res.status(403).json({ message: "You have been blocked due to inappropriate language." });
     return;
   }

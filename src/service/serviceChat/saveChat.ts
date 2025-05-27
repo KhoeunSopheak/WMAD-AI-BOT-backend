@@ -3,7 +3,7 @@ import { ollamaNoStream, ollamaStream } from "../../service/ollamaChat";
 import { ChatModel } from "../../models/chat.model";
 import { v4 as uuidv4 } from "uuid";
 import { BlockModel } from "../../models/block.model";
-import { Filter } from "bad-words";
+const Filter = require('bad-words');
 
 export const askQuery = async (req: Request, res: Response) => {
   const { user_message, category, isStream = false } = req.body;
