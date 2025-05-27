@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   backend:
-    container_name: wmad-backend
+    container_name: wmad-ai-bot-backend-backend-1
     build: .
     ports:
       - "127.0.0.1:9001:3000"
