@@ -27,7 +27,7 @@ app.use(limiter)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })) // for form data
 var corsOptions = {
-  origin: "http://127.0.0.1:3301", // your frontend URL
+  origin: "https://wmad-gpt.final25.psewmad.org", // your frontend URL
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   credentials: true, // if you use cookies, auth, etc.
 };
